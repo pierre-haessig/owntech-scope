@@ -1,6 +1,8 @@
 # OwnTech Scope library
 
-OwnTech Scope library allows recording over time the live value of variables from within a microcontroller application loop (typically control and measurement variables). The data is recorded in the controller memory and can later be sent over the serial monitor to the host computer for futher analysis (data plot).
+OwnTech Scope library allows recording over time the live value of variables from within a microcontroller application loop (typically control and measurement variables). The data is recorded in the controller memory and can later be sent over the serial monitor to the host computer for further analysis (data plot).
+
+![Scope usage illustration](doc/Scope_usage.png)
 
 Here is a plot of the recorded data for a motor control application:
 
