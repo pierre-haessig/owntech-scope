@@ -10,8 +10,8 @@ Here is a plot of the recorded data for a motor control application:
 
 ### 1\. Platformio project configuration
 
-Add the following to `lib_deps` in `platformio.ini`  
-```scopemimicry = https://github.com/owntech-foundation/scopemimicry.git```  
+Add the following to `lib_deps` in `platformio.ini`
+```scopemimicry = https://github.com/owntech-foundation/scopemimicry.git```
 
 ###  2\. Include the library
 
@@ -22,6 +22,23 @@ In the microcontroller application code:
 ```
 
 ## Scope library usage
+
+### Overview of scope acquisition operation
+
+Each scope instance is, at each instant, in one of its three possible operation states:
+
+- Untriggered (`ACQ_UNTRIG`): the scope records samples before being triggered
+- Triggered (`ACQ_TRIG`): the scope records samples after a trigger event
+- Done (`ACQ_DONE`): the scope has finished recording samples and is data is ready to be retrieved
+
+The scope operation starts with a call to its `start()` method which initializes it to the Untriggered state.
+This is followed by repeated calls to `acquire()` to record samples and query the `trigger()` function. A rising edge of the trigger brings the scope to the Triggered state, where it stays until the recording buffer is full.
+The way to call the `start()` and `acquire()` methods and how to define the `trigger()` is detailed further down.
+
+Scope timing diagram:
+
+![Scope timing diagram](doc/Scope_Acquisition_timing.png)
+
 
 ### 1\. Scope setup
 
@@ -68,7 +85,7 @@ Remarks:
 
 ### 2\. Data acquisition and trigger
 
-The record of channel samples is not automatic. Rather, it must be done by **periodically** calling:  
+The record of channel samples is not automatic. Rather, it must be done by **periodically** calling:
 
 ```cpp
 scope.acquire();
@@ -107,14 +124,14 @@ If needed, signals should be lowpass filtered before decimation (as done in [sci
 
 Data recording by `scope.acquire()` can be controlled by a user-provided trigger function so that the recording only happens after a trigger condition held true at least for one instant.
 
-To do that, define a trigger function taking no argument. It should return a `bool` value that will trigger the scope when returning `true`. 
+To do that, define a trigger function taking no argument. It should return a `bool` value that will trigger the scope when returning `true`.
 
-Trigger function example:  
+Trigger function example:
 ```cpp
 bool a_trigger()
     return (myVariable == 1)
 ```
-will trigger the scope when `myVariable = 1` (with `myVariable` being globally defined)  
+will trigger the scope when `myVariable = 1` (with `myVariable` being globally defined)
 
 Once the trigger function created, attach the trigger function to the scope:
 ```cpp
@@ -140,7 +157,7 @@ scope.set_pretrig_nsamples(10);
 - as a fraction of the length (between 0.0 and 1.0):
 
 ```cpp
-scope.set_pretrig_ratio(0.5F); // 50% of samples 
+scope.set_pretrig_ratio(0.5F); // 50% of samples
 ```
 
 Minor detail: if the trigger happens too soon, that is before the prescribed number of pretrigger sample were recorded, then the scope records more posttrigger samples to reach the total of length samples before stopping acquisition.
